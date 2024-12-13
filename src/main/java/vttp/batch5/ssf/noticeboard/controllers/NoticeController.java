@@ -51,7 +51,6 @@ public class NoticeController {
         return mav;
     }
 
-    // REDIS-CLI COMMAND: randomkey
     @GetMapping("/healthz")
     public ModelAndView getHealthz() {
         ModelAndView mav = new ModelAndView("notice");
@@ -70,6 +69,5 @@ public class NoticeController {
             return mav;
         }
     }
-    
     
 }

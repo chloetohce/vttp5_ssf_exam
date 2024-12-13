@@ -4,10 +4,12 @@ import java.io.StringReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -59,19 +61,28 @@ public class NoticeService {
 			.body(jsonNotice.toString());
 			
 		// Handling response
-		ResponseEntity<String> response = restTemplate.exchange(request, String.class);
-		return handleResponse(response);
+		return handleResponse(request);
 	}
+	
+	private String handleResponse(RequestEntity<String> request) throws Exception {
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(request, String.class);
 
-	private String handleResponse(ResponseEntity<String> response) throws Exception {
-		JsonReader reader = Json.createReader(new StringReader(response.getBody()));
-		JsonObject payload = reader.readObject();
+			JsonReader reader = Json.createReader(new StringReader(response.getBody()));
+			JsonObject payload = reader.readObject();
+	
+			if (response.getStatusCode().is2xxSuccessful() || payload.containsKey("id")) {
+				// Write to Redis DB
+				writeToDB(payload.getString("id"), payload.toString());
+				return payload.getString("id");
+			} else {
+				throw new HttpClientErrorException(HttpStatusCode.valueOf(400), payload.toString());
+			}
+			
+		} catch (HttpClientErrorException e) {
+			JsonReader reader = Json.createReader(new StringReader(e.getResponseBodyAsString()));
+			JsonObject payload = reader.readObject();
 
-		if (response.getStatusCode().is2xxSuccessful() || payload.containsKey("id")) {
-			// Write to Redis DB
-			writeToDB(payload.getString("id"), payload.toString());
-			return payload.getString("id");
-		} else {
 			throw new Exception(payload.getString("message"));
 		}
 

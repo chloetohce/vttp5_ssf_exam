@@ -24,6 +24,8 @@ public class NoticeRepository {
 	 * 
 	 */
 	
+
+
 	// REDIS-CLI COMMAND: hset <redisKey> <hashKey> <data>
 	public void insertNotices(String redisKey, String hashKey, Object data) {
 		redisTemplate.opsForHash().put(redisKey, hashKey, data);

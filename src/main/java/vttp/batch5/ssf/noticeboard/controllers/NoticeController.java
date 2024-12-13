@@ -48,13 +48,12 @@ public class NoticeController {
             mav.addObject("noticeId", noticeId);
         } catch (Exception e) {
             mav.setViewName("post-error");
-            mav.addObject("url", "\"" + request.getRequestURL().toString() + "\"");
             mav.addObject("errMsg", e.getMessage());
         }
         return mav;
     }
 
-    @GetMapping("/healthz")
+    @GetMapping("/status")
     @ResponseBody
     public ResponseEntity<String> getHealthz() {
 

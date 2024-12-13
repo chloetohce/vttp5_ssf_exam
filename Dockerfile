@@ -31,7 +31,7 @@ ENV PUBLISHSERVER_URL=https://publishing-production-d35a.up.railway.app
 
 EXPOSE ${SERVER_PORT}
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -s -f http://localhost:${SERVER_PORT}/healthz || exit 1
+HEALTHCHECK --interval=60s --timeout=5s --start-period=120s \
+    CMD curl -s -f http://localhost:${SERVER_PORT}/status || exit 1
 
 ENTRYPOINT SERVER_PORT=${SERVER_PORT} java -jar app.jar

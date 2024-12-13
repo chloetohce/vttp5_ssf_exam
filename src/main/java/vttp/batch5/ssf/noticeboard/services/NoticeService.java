@@ -4,12 +4,12 @@ import java.io.StringReader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -76,10 +76,10 @@ public class NoticeService {
 				writeToDB(payload.getString("id"), payload.toString());
 				return payload.getString("id");
 			} else {
-				throw new HttpClientErrorException(HttpStatusCode.valueOf(400), payload.toString());
+				throw new HttpServerErrorException(response.getStatusCode(), payload.toString());
 			}
 			
-		} catch (HttpClientErrorException e) {
+		} catch (HttpStatusCodeException e) {
 			JsonReader reader = Json.createReader(new StringReader(e.getResponseBodyAsString()));
 			JsonObject payload = reader.readObject();
 

@@ -34,4 +34,4 @@ EXPOSE ${SERVER_PORT}
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD curl -s -f http://localhost:${SERVER_PORT}/healthz || exit 1
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT SERVER_PORT=${SERVER_PORT} java -jar app.jar

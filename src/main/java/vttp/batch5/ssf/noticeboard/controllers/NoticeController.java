@@ -56,19 +56,19 @@ public class NoticeController {
 
     @GetMapping("/healthz")
     @ResponseBody
-    public ResponseEntity<Void> getHealthz() {
+    public ResponseEntity<String> getHealthz() {
 
         try {
             if (noticeService.checkRepo() == null) {
                 throw new Exception("Error accessing redis");
             }
-            ResponseEntity<Void> response = ResponseEntity.ok()
+            ResponseEntity<String> response = ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .build();
             return response;
 
         } catch (Exception e) {
-            ResponseEntity<Void> response = ResponseEntity.status(HttpStatusCode.valueOf(503))
+            ResponseEntity<String> response = ResponseEntity.status(HttpStatusCode.valueOf(503))
                 .contentType(MediaType.APPLICATION_JSON)
                 .build();
             return response;

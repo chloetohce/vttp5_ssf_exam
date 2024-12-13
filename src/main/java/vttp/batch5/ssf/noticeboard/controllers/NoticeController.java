@@ -2,12 +2,15 @@ package vttp.batch5.ssf.noticeboard.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,21 +55,23 @@ public class NoticeController {
     }
 
     @GetMapping("/healthz")
-    public ModelAndView getHealthz() {
-        ModelAndView mav = new ModelAndView("notice");
+    @ResponseBody
+    public ResponseEntity<Void> getHealthz() {
 
         try {
             if (noticeService.checkRepo() == null) {
                 throw new Exception("Error accessing redis");
             }
-
-            mav.setStatus(HttpStatusCode.valueOf(200));
-            return mav;
+            ResponseEntity<Void> response = ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
+            return response;
 
         } catch (Exception e) {
-            mav.setViewName("unhealthy");
-            mav.setStatus(HttpStatusCode.valueOf(503));
-            return mav;
+            ResponseEntity<Void> response = ResponseEntity.status(HttpStatusCode.valueOf(503))
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
+            return response;
         }
     }
     
